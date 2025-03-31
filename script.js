@@ -50,8 +50,15 @@ function init() {
  */
 function fetchRandomMeal() {
   return fetch("https://www.themealdb.com/api/json/v1/1/random.php")
-  .then((response) => response.json())  // Parse JSON
-  .then((data) => data.meals[0]);  // Return the first meal
+    .then(response => response.json())
+    .then(data => {
+      if (data.meals && data.meals.length > 0) {
+        return data.meals[0]; // Returner første måltid
+      }
+    })
+    .catch(error => {
+      console.error("Feil ved henting av tilfeldig måltid:", error);
+    });
 }
 
 /*
@@ -71,18 +78,18 @@ function displayMealData(meal) {
         `<li>${meal[`strIngredient${i}`]}: ${meal[`strMeasure${i}`]}</li>`
       );
     }
+  }
+
+  mealContainer.innerHTML = `
+    <h2>${meal.strMeal}</h2>
+    <p><strong>Category:</strong> ${meal.strCategory}</p>
+    <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+    <h3>Ingredients</h3>
+    <ul>${mealIngredients.join("")}</ul>
+    <p><strong>Instructions:</strong><br>${meal.strInstructions}</p>
+  `;
 }
 
- // Vist måltidsinformasjon
- mealContainer.innerHTML = `
- <h2>${meal.strMeal}</h2>
- <p><strong>Category:</strong> ${meal.strCategory}</p>
- <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
- <h3>Ingredients</h3>
- <ul>${mealIngredients.join("")}</ul>
- <p><strong>Instructions:</strong><br>${meal.strInstructions}</p>
-`;
-}
 /*
 Convert MealDB Category to a TheCocktailDB Spirit
 Looks up category in our map, or defaults to 'cola'
@@ -95,23 +102,23 @@ function mapMealCategoryToDrinkIngredient(category) {
 /*
 Fetch a Cocktail Using a Spirit from TheCocktailDB
 Returns Promise that resolves to cocktail object
-We call https://www.thecocktaildb.com/api/json/v1/1/search.php?s=DRINK_INGREDIENT to get a list of cocktails
-Don't forget encodeURIComponent()
-If no cocktails found, fetch random
+We call https://www.thecocktaildb.com/api/json/v1/1/search.php?i=DRINK_INGREDIENT to get a list of cocktails
 */
 function fetchCocktailByDrinkIngredient(drinkIngredient) {
-  const url = `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${encodeURIComponent(
-    drinkIngredient
-  )}`;
+  const url = `https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${encodeURIComponent(drinkIngredient)}`;
+  
   return fetch(url)
-    .then((response) => response.json())  // Hent data fra CocktailDB API
-    .then((data) => {
-      if (data.drinks) {
-        return data.drinks[0];  // Returner første treff
-      } else {
-        return fetchRandomCocktail();  // Fallback til tilfeldig cocktail
-      }
-    });
+      .then(response => response.json())
+      .then(data => {
+          if (data.drinks && data.drinks.length > 0) {
+              return data.drinks[0]; // Return first cocktail
+          } else {
+              return fetchRandomCocktail(); // Fetch random cocktail if none found
+          }
+      })
+      .catch(error => {
+          console.error("Feil ved henting av cocktail:", error);
+      });
 }
 
 /*
@@ -120,8 +127,11 @@ Returns a Promise that resolves to cocktail object
 */
 function fetchRandomCocktail() {
   return fetch("https://www.thecocktaildb.com/api/json/v1/1/random.php")
-  .then((response) => response.json())
-  .then((data) => data.drinks[0]);
+      .then(response => response.json())
+      .then(data => data.drinks[0])
+      .catch(error => {
+          console.error("Feil ved henting av tilfeldig cocktail:", error);
+      });
 }
 
 /*
@@ -131,22 +141,21 @@ function displayCocktailData(cocktail) {
   const cocktailContainer = document.getElementById("cocktail-container");
   const cocktailIngredients = [];
 
-  // Looper gjennom ingredienser og legger dem til en liste
   for (let i = 1; i <= 15; i++) {
-    if (cocktail[`strIngredient${i}`]) {
+    if (cocktail[`strIngredient${i}`] && cocktail[`strMeasure${i}`]) {
       cocktailIngredients.push(
         `<li>${cocktail[`strIngredient${i}`]}: ${cocktail[`strMeasure${i}`]}</li>`
       );
     }
-}
+  }
 
-cocktailContainer.innerHTML = `
-<h2>${cocktail.strDrink}</h2>
-<img src="${cocktail.strDrinkThumb}" alt="${cocktail.strDrink}">
-<h3>Ingredients</h3>
-<ul>${cocktailIngredients.join("")}</ul>
-<p><strong>Instructions:</strong><br>${cocktail.strInstructions}</p>
-`;
+  cocktailContainer.innerHTML = `
+    <h2>${cocktail.strDrink}</h2>
+    <img src="${cocktail.strDrinkThumb}" alt="${cocktail.strDrink}">
+    <h3>Ingredients</h3>
+    <ul>${cocktailIngredients.join("")}</ul>
+    <p><strong>Instructions:</strong><br>${cocktail.strInstructions}</p>
+  `;
 }
 
 /*
