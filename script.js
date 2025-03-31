@@ -44,6 +44,25 @@ function init() {
     });
 }
 
+
+function searchCocktail() {
+  const drinkIngredient = document.getElementById("drink-search").value.trim(); // Get the value and remove extra spaces
+  
+  // Check if the input field is empty
+  if (!drinkIngredient) {
+    alert("Please enter a drink ingredient!");
+    return; // Stop the function if the input is empty
+  }
+
+  fetchCocktailByDrinkIngredient(drinkIngredient)
+    .then(cocktail => {
+      displayCocktailData(cocktail);
+    })
+    .catch(error => {
+      console.error("Error while searching for cocktail:", error);
+    });
+}
+
 /*
  Fetch a Random Meal from TheMealDB
  Returns a Promise that resolves with the meal object
@@ -80,6 +99,14 @@ function displayMealData(meal) {
     }
   }
 
+  let youtubeEmbed = '';
+  if (meal.strYoutube) {
+    youtubeEmbed = `
+      <h3>Recipe Video</h3>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/${meal.strYoutube.split('=')[1]}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    `;
+  }
+
   mealContainer.innerHTML = `
     <h2>${meal.strMeal}</h2>
     <p><strong>Category:</strong> ${meal.strCategory}</p>
@@ -87,8 +114,10 @@ function displayMealData(meal) {
     <h3>Ingredients</h3>
     <ul>${mealIngredients.join("")}</ul>
     <p><strong>Instructions:</strong><br>${meal.strInstructions}</p>
+    ${youtubeEmbed}
   `;
 }
+
 
 /*
 Convert MealDB Category to a TheCocktailDB Spirit
@@ -113,13 +142,15 @@ function fetchCocktailByDrinkIngredient(drinkIngredient) {
           if (data.drinks && data.drinks.length > 0) {
               return data.drinks[0]; // Return first cocktail
           } else {
+              alert("No drinks found, fetching random cocktail!");
               return fetchRandomCocktail(); // Fetch random cocktail if none found
           }
       })
       .catch(error => {
-          console.error("Feil ved henting av cocktail:", error);
+          console.error("Error fetching cocktail:", error);
       });
 }
+
 
 /*
 Fetch a Random Cocktail (backup in case nothing is found by the search)

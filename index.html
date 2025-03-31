@@ -9,15 +9,21 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1 id="title">Meal + Cocktail Matching</h1>
+    <h1 id="title">MEAL + COCKTAIL MATCHING</h1>
 
-    <div id="meal-container" class="meal">Random meal info goes here</div>
+    <label for="drink-search">Search for a drink:</label>
+    <input type="text" id="drink-search" placeholder="Enter drink ingredient">
+    <button onclick="searchCocktail()">Search</button>
 
-    <div id="video-container" class="video">
+    <div class="meal-cocktail-container">
+        <div class="meal">
+        <div id="meal-container">Random meal info goes here</div>
+        <div id="video-container" class="video"></div>
+        </div>
 
-    <div id="cocktail-container" class="cocktail">
-      Matched or random cocktail info goes here
+      <div id="cocktail-container" class="cocktail">Matched or random cocktail info goes here</div>
     </div>
+    
 
     <script src="script.js"></script>
   </body>
