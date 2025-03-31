@@ -49,7 +49,9 @@ function init() {
  Returns a Promise that resolves with the meal object
  */
 function fetchRandomMeal() {
-    // Fill in
+  return fetch("https://www.themealdb.com/api/json/v1/1/random.php")
+  .then((response) => response.json())  // Parse JSON
+  .then((data) => data.meals[0]);  // Return the first meal
 }
 
 /*
@@ -59,9 +61,28 @@ Receives a meal object with fields like:
   strIngredientX, strMeasureX, etc.
 */
 function displayMealData(meal) {
-    // Fill in
+  const mealContainer = document.getElementById("meal-container");
+  const mealIngredients = [];
+
+  // Looper gjennom ingredienser og legger dem til en liste
+  for (let i = 1; i <= 20; i++) {
+    if (meal[`strIngredient${i}`] && meal[`strMeasure${i}`]) {
+      mealIngredients.push(
+        `<li>${meal[`strIngredient${i}`]}: ${meal[`strMeasure${i}`]}</li>`
+      );
+    }
 }
 
+ // Vist måltidsinformasjon
+ mealContainer.innerHTML = `
+ <h2>${meal.strMeal}</h2>
+ <p><strong>Category:</strong> ${meal.strCategory}</p>
+ <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+ <h3>Ingredients</h3>
+ <ul>${mealIngredients.join("")}</ul>
+ <p><strong>Instructions:</strong><br>${meal.strInstructions}</p>
+`;
+}
 /*
 Convert MealDB Category to a TheCocktailDB Spirit
 Looks up category in our map, or defaults to 'cola'
@@ -79,7 +100,18 @@ Don't forget encodeURIComponent()
 If no cocktails found, fetch random
 */
 function fetchCocktailByDrinkIngredient(drinkIngredient) {
-    // Fill in
+  const url = `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${encodeURIComponent(
+    drinkIngredient
+  )}`;
+  return fetch(url)
+    .then((response) => response.json())  // Hent data fra CocktailDB API
+    .then((data) => {
+      if (data.drinks) {
+        return data.drinks[0];  // Returner første treff
+      } else {
+        return fetchRandomCocktail();  // Fallback til tilfeldig cocktail
+      }
+    });
 }
 
 /*
@@ -87,14 +119,34 @@ Fetch a Random Cocktail (backup in case nothing is found by the search)
 Returns a Promise that resolves to cocktail object
 */
 function fetchRandomCocktail() {
-    // Fill in
+  return fetch("https://www.thecocktaildb.com/api/json/v1/1/random.php")
+  .then((response) => response.json())
+  .then((data) => data.drinks[0]);
 }
 
 /*
 Display Cocktail Data in the DOM
 */
 function displayCocktailData(cocktail) {
-    // Fill in
+  const cocktailContainer = document.getElementById("cocktail-container");
+  const cocktailIngredients = [];
+
+  // Looper gjennom ingredienser og legger dem til en liste
+  for (let i = 1; i <= 15; i++) {
+    if (cocktail[`strIngredient${i}`]) {
+      cocktailIngredients.push(
+        `<li>${cocktail[`strIngredient${i}`]}: ${cocktail[`strMeasure${i}`]}</li>`
+      );
+    }
+}
+
+cocktailContainer.innerHTML = `
+<h2>${cocktail.strDrink}</h2>
+<img src="${cocktail.strDrinkThumb}" alt="${cocktail.strDrink}">
+<h3>Ingredients</h3>
+<ul>${cocktailIngredients.join("")}</ul>
+<p><strong>Instructions:</strong><br>${cocktail.strInstructions}</p>
+`;
 }
 
 /*
