@@ -22,3 +22,43 @@ body {
   display: block;
   margin-top: 10px;
 }
+
+
+.meal,
+.cocktail {
+  background-color: #f9f9f9; 
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+  transition: transform 0.3s ease, box-shadow 0.3s ease; 
+}
+
+.meal:hover,
+.cocktail:hover {
+  transform: scale(1.05); 
+  box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2); 
+}
+
+#meal-container,
+#cocktail-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  body {
+    grid-template-columns: 1fr; 
+    grid-template-rows: auto; 
+  }
+
+  .meal,
+  .cocktail {
+    width: 80%; 
+  }
+
+  .meal img,
+  .cocktail img {
+    max-width: 200px;
+  }
+}
